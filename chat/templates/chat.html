@@ -1,0 +1,16 @@
+<!-- chat.html -->
+
+<form method="post" action="{% url 'chat' %}">
+  {% csrf_token %}
+  {% if user.is_authenticated %}
+      {{ formulario.usuario.as_hidden }}
+  {% else %}
+      <label for="{{ formulario.usuario.id_for_label }}">Nombre de Usuario:</label>
+      {{ formulario.usuario }}
+  {% endif %}
+  <br>
+  <label for="{{ formulario.contenido.id_for_label }}">Contenido del Mensaje:</label>
+  {{ formulario.contenido }}
+  <br>
+  <button type="submit">Enviar</button>
+</form>
