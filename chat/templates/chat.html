@@ -1,4 +1,4 @@
-<!-- chat.html -->
+{% comment %} <!-- chat.html -->
 
 <form method="post" action="{% url 'chat' %}">
   {% csrf_token %}
@@ -12,5 +12,25 @@
   <label for="{{ formulario.contenido.id_for_label }}">Contenido del Mensaje:</label>
   {{ formulario.contenido }}
   <br>
+  <button type="submit">Enviar</button>
+</form> {% endcomment %}
+
+
+
+<form method="post" action="{% url 'chat' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% if user.is_authenticated %}
+      {{ formulario.usuario.as_hidden }}
+  {% else %}
+      <label for="{{ formulario.usuario.id_for_label }}">Nombre de Usuario:</label>
+      {{ formulario.usuario }}
+  {% endif %}
+  <br>
+  <label for="{{ formulario.contenido.id_for_label }}">Contenido del Mensaje:</label>
+  {{ formulario.contenido }}
+  {% comment %} <br>
+  <label for="{{ formulario.archivo_audio.id_for_label }}">Archivo de Audio:</label>
+  {{ formulario.archivo_audio }}
+  <br> {% endcomment %}
   <button type="submit">Enviar</button>
 </form>

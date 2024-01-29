@@ -1,0 +1,40 @@
+<h1>Enviar Audio</h1>
+
+  <form id="audio-form" method="post" action="{% url 'audio' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% if user.is_authenticated %}
+          {{ formulario.usuario.as_hidden }}
+      {% else %}
+          <label for="{{ formulario.usuario.id_for_label }}">Nombre de Usuario:</label>
+          {{ formulario.usuario }}
+      {% endif %}
+      <label for="{{ formulario.archivo_audio.id_for_label }}">Archivo de Audio:</label>
+      {{ formulario.archivo_audio }}
+      <input type="hidden" name="audio_path" id="audio-path" value="">
+      <br>
+      <button type="button" id="grabar-audio">Grabar Audio</button>
+      <button type="submit">Enviar Audio</button>
+  </form>
+
+  <script>
+      document.getElementById('grabar-audio').addEventListener('click', function () {
+          // Realizar la solicitud al servidor para grabar audio
+          fetch('/crear_audio/', {
+              method: 'GET',
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  // Actualizar el campo oculto con la ruta del audio grabado
+                  document.getElementById('audio-path').value = data.audio_path;
+                  console.log('Audio grabado:', data.audio_path);
+              } else {
+                  console.error('Error al grabar audio.');
+              }
+          })
+          .catch(error => {
+              console.error('Error en la solicitud:', error);
+          });
+      });
+  </script>
+

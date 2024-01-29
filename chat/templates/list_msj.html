@@ -9,33 +9,53 @@
     <h1>Mensajes en Tiempo Real</h1>
     <ul id="mensajes-lista">
         {% for mensaje in mensajes %}
-            <li>{{ mensaje.usuario.username }}: {{ mensaje.contenido }}</li>
+            <li>
+                {{ mensaje.usuario.username }}: {{ mensaje.contenido }}
+                {% if mensaje.archivo_audio %}
+                    <audio controls>
+                        <source src="{{ mensaje.archivo_audio.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                {% endif %}
+            </li>
         {% endfor %}
     </ul>
 
-    <script>
-        // Conectarse al servidor WebSocket de Django Channels
-        const socket = new SockJS('/ws/chat/');
-        const stompClient = Stomp.over(socket);
+    <!-- Agregar botones para enviar mensaje y enviar audio -->
+    <a href="{% url 'chat' %}"><button>Enviar Mensaje</button></a>
+    <a href="{% url 'audio' %}"><button>Enviar Audio</button></a>
 
-        stompClient.connect({}, function (frame) {
-            // Suscribirse al canal de mensajes
-            stompClient.subscribe('/chat_group/', function (mensaje) {
-                // Recibir y procesar nuevos mensajes
-                const mensajeData = JSON.parse(mensaje.body);
-                const nuevoMensaje = `${mensajeData.usuario}: ${mensajeData.message}`;
-                agregarMensajeAlLista(nuevoMensaje);
-            });
+    <script>
+        // ... (código existente)
+
+        // Manejar clic en el botón "Enviar Mensaje"
+        document.getElementById('enviar-mensaje').addEventListener('click', function () {
+            // Lógica para enviar mensaje de texto
+            const mensajeTexto = prompt('Ingrese el mensaje de texto:');
+            if (mensajeTexto) {
+                stompClient.send('/app/chat/', {}, JSON.stringify({
+                    'message': mensajeTexto,
+                    'usuario': 'Usuario123',
+                }));
+            }
         });
 
-        function agregarMensajeAlLista(mensaje) {
-            const mensajesLista = document.getElementById('mensajes-lista');
-            const nuevoElemento = document.createElement('li');
-            nuevoElemento.textContent = mensaje;
-            mensajesLista.appendChild(nuevoElemento);
-        }
+        // Manejar clic en el botón "Enviar Audio"
+        document.getElementById('enviar-audio').addEventListener('click', function () {
+            // Lógica para enviar archivo de audio
+            const archivoAudio = prompt('Seleccione un archivo de audio:');
+            if (archivoAudio) {
+                // Subir el archivo a través de AJAX o similar
+                // y obtener la URL del archivo subido
+                const audioUrl = '/media/archivos_audio/audio.mp3';  // Reemplazar con la URL real
+                stompClient.send('/app/chat/', {}, JSON.stringify({
+                    'message': 'Mensaje de audio',
+                    'usuario': 'Usuario123',
+                    'audio_url': audioUrl,
+                }));
+            }
+        });
     </script>
 </body>
 </html>
-<!-- Botón para ir a la vista de chat -->
-<a href="{% url 'chat' %}"><button>Enviar Mensaje</button></a>
+
