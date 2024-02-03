@@ -1,3 +1,13 @@
 # Ignorar directorios __pycache__
 __pycache__/
 
+# Ignorar archivos de base de datos
+db.sqlite3
+*.db
+
+# Ignorar migraciones de Django
+/migrations/
+
+# Ignorar archivos de medios
+/media/
+/static/media/
